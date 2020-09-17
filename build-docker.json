@@ -1,0 +1,47 @@
+{
+    "variables": {
+      "uhub_repo": "{{env `REPO`}}",
+      "uhub_username": "{{env `UHUB_USERNAME`}}",
+      "uhub_password": "{{env `UHUB_PASSWORD`}}"
+    },
+  
+    "builders": [{
+        "type": "docker",
+        "image": "ubuntu:18.04",
+        "commit": true,
+        "changes": [
+          "ENV $PORT=443 $SSPASSWORD=PASSWORD CRYPTOR_METHOD=aes-256-cfb AUTH_METHOD=auth_aes128_md5 OBFS_METHOD=tls1.2_ticket_auth",
+          "CMD python shadowsocks/server.py -p $PORT -k $SSPASSWORD -m  $CRYPTOR_METHOD -O $AUTH_METHOD -o $OBFS_METHOD start"
+        ]
+      }],
+    "provisioners": [
+      {
+        "type": "shell",
+        "inline": [
+            "apt update",
+            "apt install -y python git",
+            "git clone https://github.com/shadowsocksr-backup/shadowsocksr.git",
+            "cd /shadowsocksr",
+            "git checkout manyuser",
+            "bash initcfg.sh",
+            "rm -rf ./.git"
+        ]
+      }],
+      "post-processors": [
+        [
+            {
+                "type": "docker-tag",
+                "repository": "uhub.service.ucloud.cn/{{user `uhub_repo`}}/sss",
+                "tags": ["latest"]
+            },
+            {
+                "type": "docker-push",
+                "login": "true",
+                "login_server": "uhub.service.ucloud.cn",
+                "login_username": "{{user `uhub_username`}}",
+                "login_password": "{{user `uhub_password`}}"
+            }
+        ]
+      ]
+  }
+  

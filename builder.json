@@ -1,0 +1,51 @@
+{
+    "variables": {
+      "ucloud_public_key": "{{env `UCLOUD_PUBKEY`}}",
+      "ucloud_private_key": "{{env `UCLOUD_SECRET`}}",
+      "ssh_user": "root",
+      "ssh_password": "",
+      "ucloud_project_id": "org-xehypo",
+      "image_id": "uimage-i4sy5k",
+      "region": "hk",
+      "az": "hk-02",
+      "yum_docker": "https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo",
+      "port": "443",
+      "uhub_repo": "",
+      "uhub_username": "",
+      "uhub_password": ""
+    },
+  
+    "builders": [{
+      "type": "ucloud-uhost",
+      "public_key":"{{user `ucloud_public_key`}}",
+      "private_key":"{{user `ucloud_private_key`}}",
+      "project_id": "{{user `ucloud_project_id`}}",
+      "region": "{{user `region`}}",
+      "availability_zone": "{{user `az`}}",
+      "instance_type": "n-basic-1",
+      "source_image_id":"{{user `image_id`}}",
+      "ssh_username":"{{user `ssh_user`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "image_name": "builder"
+    }],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "Dockerfile",
+            "destination": "/tmp/Dockerfile"
+        },
+      {
+        "type": "shell",
+        "scripts": [
+          "build.sh"
+        ],
+        "environment_vars": [
+          "YUM_DOCKER={{user `yum_docker`}}",
+          "PORT={{user `port`}}",
+          "REPO={{user `uhub_repo`}}",
+          "UHUB_USERNAME={{user `uhub_username`}}",
+          "UHUB_PASSWORD={{user `uhub_password`}}"
+        ]
+      }]
+  }
+  
