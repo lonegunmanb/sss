@@ -20,6 +20,7 @@ variable "private_key" {
 }
 
 variable "builder_image_id" {
+  description = "Set to empty will use UCloud official CentOS image and will spend a lot of time to install docker. Build your own image with docker installed is advised."
   type    = string
   default = ""
 }
