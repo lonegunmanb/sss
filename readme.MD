@@ -1,30 +1,60 @@
+For those who don't want to install docker on their machine(on windows, install docker needs turn on Hyper-V or WSL2), or docker build is very slow or impossible because of low network bandwidth or gfw, we can use packer to launch a virtual machine on UCloud (hk region advised) and use this virtual machine to run docker build and docker push for us.
+
+This Dockerfile builds an image of magic ladder, feel free to replace Dockerfile with your own one.
+
 1. [install packer](https://learn.hashicorp.com/tutorials/packer/getting-started-install)
-2. [install ucloud cli](https://github.com/ucloud/ucloud-cli/blob/master/README.md) and confiure to hk region
-3. obtain base image id (CentOS 7+)
+2. [install terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started)
 
-```shell script
-ucloud image list
+3. touch terraform.tfvars and edit:
+
+```hcl
+public_key  = "{{your ucloud public key}}"
+private_key = "{{your ucloud private key}}"
+packer_vars = {
+  region            = "hk"
+  ssh_password      = "{{a temp ssh password for packer to use}}"
+  ucloud_project_id = "{{your ucloud project id}}"
+  region            = "hk"
+  az                = "hk-02"
+  docker_repo       = "{{your uhub repo name}}"
+  docker_username   = "{{your ucloud username}}"
+  docker_password   = "{{your ucloud password}}"
+  repo_url          = "uhub.service.ucloud.cn"
+  image     = "{{your image name}}"
+  image_tag = "latest"
+}
 ```
+For those who want push to docker hub:
 
-4. touch builder-var.json and edit:
-
-```json
-{
-    "ucloud_public_key": "{{your ucloud public key}}",
-    "ucloud_private_key": "{{your ucloud private key}}",
-    "ssh_password": "{{a temp ssh password for packer to use once-time}}",
-    "ucloud_project_id": "{{your ucloud project id}}",
-    "image_id": "{{ucloud centos base image id, obtain from ucloud cli}}",
-    "region": "hk",
-    "az": "hk-02",
-    "uhub_repo": "{{your uhub repo name}}",
-    "uhub_username": "{{your ucloud user name(username for web login)}}",
-    "uhub_password": "{{your ucloud password(password for web login)}}"
+```hcl
+public_key  = "{{your ucloud public key}}"
+private_key = "{{your ucloud private key}}"
+packer_vars = {
+  region            = "hk"
+  ssh_password      = "{{a temp ssh password for packer to use}}"
+  ucloud_project_id = "{{your ucloud project id}}"
+  region            = "hk"
+  az                = "hk-02"
+  docker_repo       = "{{your docker hub repo name}}"
+  docker_username   = "{{your docker hub username}}"
+  docker_password   = "{{your docker hub password}}"
+  repo_url          = ""
+  image     = "{{your image name}}"
+  image_tag = "latest"
 }
 ```
 
-5. build
+If you have built a CentOS image with docker installed, add image id to tfvars:
+
+```hcl
+builder_image_id = "{{your image id}}"
+```
+
+4. build
 
 ```shell script
-packer build -var-file=builder-var.json builder.json
+terraform init
+terraform apply
 ```
+
+We execute packer in null_resource which has an uuid as trigger, so everytime you execute 'terraform apply' will trigger a build.
