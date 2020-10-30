@@ -10,9 +10,12 @@
       "az": "hk-02",
       "yum_docker": "https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo",
       "port": "443",
-      "uhub_repo": "",
-      "uhub_username": "",
-      "uhub_password": ""
+      "docker_repo": "",
+      "docker_username": "",
+      "docker_password": "",
+      "repo_url": "uhub.service.ucloud.cn",
+      "image": "sss",
+      "image_tag": "latest"
     },
   
     "builders": [{
@@ -26,6 +29,7 @@
       "source_image_id":"{{user `image_id`}}",
       "ssh_username":"{{user `ssh_user`}}",
       "ssh_password": "{{user `ssh_password`}}",
+      "boot_disk_type": "cloud_ssd",
       "image_name": "builder"
     }],
     "provisioners": [
@@ -42,10 +46,12 @@
         "environment_vars": [
           "YUM_DOCKER={{user `yum_docker`}}",
           "PORT={{user `port`}}",
-          "REPO={{user `uhub_repo`}}",
-          "UHUB_USERNAME={{user `uhub_username`}}",
-          "UHUB_PASSWORD={{user `uhub_password`}}"
+          "REPO={{user `docker_repo`}}",
+          "DOCKER_USERNAME={{user `docker_username`}}",
+          "DOCKER_PASSWORD={{user `docker_password`}}",
+          "REPO_URL={{user `repo_url`}}",
+          "IMAGE={{user `image`}}",
+          "IMAGE_TAG={{user `image_tag`}}"
         ]
       }]
   }
-  
