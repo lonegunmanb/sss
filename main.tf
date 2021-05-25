@@ -42,7 +42,7 @@ EOT
 
 
 data "template_file" "pod_yaml" {
-  filename = "${path.module}/pod.yaml"
+  template = "${path.module}/pod.yaml"
   vars = {
     sspassword = var.sspassword
     image_id = "${var.packer_vars.repo_url}/${var.packer_vars.docker_repo}/${var.packer_vars.image}:${var.packer_vars.image_tag}"
