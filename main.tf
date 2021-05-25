@@ -5,15 +5,15 @@ terraform {
       source  = "ucloud/ucloud"
       version = "~> 1.27.0"
     }
-    null = {
+    null   = {
       version = "~> 3.0.0"
     }
   }
 }
 
 provider "ucloud" {
-  project_id  = var.packer_vars.ucloud_project_id
-  region      = var.packer_vars.region
+  project_id = var.packer_vars.ucloud_project_id
+  region     = var.packer_vars.region
 }
 
 data "ucloud_images" "centos" {
@@ -43,9 +43,9 @@ EOT
 
 data "template_file" "pod_yaml" {
   template = "${path.module}/pod.yaml"
-  vars = {
+  vars     = {
     sspassword = var.sspassword
-    image_id = "${var.packer_vars.repo_url}/${var.packer_vars.docker_repo}/${var.packer_vars.image}:${var.packer_vars.image_tag}"
+    image_id   = "${var.packer_vars.repo_url}/${var.packer_vars.docker_repo}/${var.packer_vars.image}:${var.packer_vars.image_tag}"
   }
 }
 
@@ -54,24 +54,25 @@ data "ucloud_vpcs" "default" {
 }
 
 data "ucloud_subnets" "default" {
-  vpc_id = data.ucloud_vpcs.default.vpcs.0.id
+  vpc_id     = data.ucloud_vpcs.default.vpcs.0.id
   name_regex = "DefaultNetwork"
 }
 
 resource "ucloud_cube_pod" "sss" {
-  depends_on = [null_resource.packer_exec]
-  vpc_id = data.ucloud_vpcs.default.vpcs.0.id
-  subnet_id = data.ucloud_subnets.default.subnets.0.id
-  pod = data.template_file.pod_yaml.rendered
-  charge_type = "postpay"
-  name = "sss"
+  depends_on        = [null_resource.packer_exec]
+  availability_zone = var.packer_vars.az
+  vpc_id            = data.ucloud_vpcs.default.vpcs.0.id
+  subnet_id         = data.ucloud_subnets.default.subnets.0.id
+  pod               = data.template_file.pod_yaml.rendered
+  charge_type       = "postpay"
+  name              = "sss"
 }
 
 resource "ucloud_eip" "sss_ip" {
-  bandwidth = 200
-  charge_mode = "traffic"
+  bandwidth     = 200
+  charge_mode   = "traffic"
   internet_type = "international"
-  name = "sss_eip"
+  name          = "sss_eip"
 }
 
 resource "ucloud_eip_association" "sss_ip_association" {
