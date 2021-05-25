@@ -12,12 +12,6 @@ variable "packer_vars" {
     image_tag         = string
   })
 }
-variable "public_key" {
-  type = string
-}
-variable "private_key" {
-  type = string
-}
 
 variable "builder_image_id" {
   description = "Set to empty will use UCloud official CentOS image and will spend a lot of time to install docker. Build your own image with docker installed is advised."

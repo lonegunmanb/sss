@@ -3,7 +3,7 @@ terraform {
   required_providers {
     ucloud = {
       source  = "ucloud/ucloud"
-      version = "~> 1.24.0"
+      version = "~> 1.27.0"
     }
     null = {
       version = "~> 3.0.0"
@@ -12,8 +12,6 @@ terraform {
 }
 
 provider "ucloud" {
-  public_key  = var.public_key
-  private_key = var.private_key
   project_id  = var.packer_vars.ucloud_project_id
   region      = var.packer_vars.region
 }
@@ -33,8 +31,6 @@ resource "null_resource" "packer_exec" {
   provisioner "local-exec" {
     command = <<EOT
 packer build \
--var 'ucloud_public_key=${var.public_key}' \
--var 'ucloud_private_key=${var.private_key}' \
 %{for name, value in var.packer_vars~}
 -var '${name}=${value}' \
 %{endfor~}

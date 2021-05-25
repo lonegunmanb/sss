@@ -1,7 +1,5 @@
 {
     "variables": {
-      "ucloud_public_key": "{{env `UCLOUD_PUBKEY`}}",
-      "ucloud_private_key": "{{env `UCLOUD_SECRET`}}",
       "ssh_user": "root",
       "ssh_password": "",
       "ucloud_project_id": "org-xehypo",
@@ -20,8 +18,6 @@
   
     "builders": [{
       "type": "ucloud-uhost",
-      "public_key":"{{user `ucloud_public_key`}}",
-      "private_key":"{{user `ucloud_private_key`}}",
       "project_id": "{{user `ucloud_project_id`}}",
       "region": "{{user `region`}}",
       "availability_zone": "{{user `az`}}",
