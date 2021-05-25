@@ -1,16 +1,16 @@
 apiVersion: v1beta1
 kind: Pod
-metadata:
-  name: sss
 spec:
   containers:
-    - env:
-        - name: SSPASSWORD
-          value: ${sspassword}
+    - name: sss
       image: '${image_id}'
-      name: cube01
       resources:
         limits:
-          cpu: 100m
           memory: 128Mi
+          cpu: 100m
+      env:
+        - name: SSPASSWORD
+          value: ${sspassword}
+      volumeMounts: []
+  volumes: []
   restartPolicy: Always
