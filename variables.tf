@@ -21,3 +21,6 @@ variable "builder_image_id" {
 locals {
   builder_image_id = var.builder_image_id == "" ? data.ucloud_images.centos.images[0].id : var.builder_image_id
 }
+variable "sspassword" {
+  type = string
+}

@@ -39,3 +39,40 @@ ${path.module}/builder.json
 EOT
   }
 }
+
+
+data "template_file" "pod_yaml" {
+  filename = "${path.module}/pod.yaml"
+  sspassword = var.sspassword
+  image_id = "${var.packer_vars.repo_url}/${var.packer_vars.docker_repo}/${var.packer_vars.image}:${var.packer_vars.image_tag}"
+}
+
+data "ucloud_vpcs" "default" {
+  name_regex = "DefaultVPC"
+}
+
+data "ucloud_subnets" "default" {
+  vpc_id = data.ucloud_vpcs.default.vpcs.0.id
+  name_regex = "DefaultNetwork"
+}
+
+resource "ucloud_cube_pod" "sss" {
+  depends_on = [null_resource.packer_exec]
+  vpc_id = data.ucloud_vpcs.default.vpcs.0.id
+  subnet_id = data.ucloud_subnets.default.subnets.0.id
+  pod = data.template_file.pod_yaml.rendered
+  charge_type = "postpay"
+  name = "sss"
+}
+
+resource "ucloud_eip" "sss_ip" {
+  bandwidth = 200
+  charge_mode = "traffic"
+  internet_type = "international"
+  name = "sss_eip"
+}
+
+resource "ucloud_eip_association" "sss_ip_association" {
+  eip_id      = ucloud_eip.sss_ip.id
+  resource_id = ucloud_cube_pod.sss.id
+}
