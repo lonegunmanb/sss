@@ -1,3 +1,5 @@
+cd sss
+
 sudo apt install -y jq
 
 export PROJECT=$(ucloud project list --json | jq -r [.[].ProjectId][0])
@@ -19,8 +21,6 @@ packer_vars = {
 sspassword = "${SSPASSWORD}"
 eip_charge_type = "${EIP_CHARGE_TYPE}"
 EOT
-
-echo nameserver 119.29.29.29 | sudo tee /etc/resolv.conf
 
 terraform init
 terraform apply -auto-approve
