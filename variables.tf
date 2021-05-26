@@ -28,3 +28,7 @@ variable "eip_charge_type" {
   type    = string
   default = "month"
 }
+variable "skip_bake_docker" {
+  type    = bool
+  default = false
+}

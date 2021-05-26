@@ -1,39 +1,18 @@
-For those who don't want to install docker on their machine(on windows, install docker needs turn on Hyper-V or WSL2), or docker build is very slow or impossible because of low network bandwidth or gfw, we can use packer to launch a virtual machine on UCloud (hk region advised) and use this virtual machine to run docker build and docker push for us.
+由于Cube只允许使用UHub的镜像，所以我们无法使用Docker Hub上的公共镜像，从Terraform中调用Packer启动一台CentOS虚拟机构建镜像，并推送到UHub，再自动Cube。
 
-This Dockerfile builds an image of magic ladder, feel free to replace Dockerfile with your own one.
+首先要在UHub中建立一个公共仓库，记住仓库的名字(仓库要建在准备运行Cube的区域)
 
-1. [install packer](https://learn.hashicorp.com/tutorials/packer/getting-started-install)
-2. [install terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started)
+在CloudShell中执行最下面的指令，但要先自行将变量值替换成自己需要的值，即可完成
 
-3. touch terraform.tfvars and edit:
+{{sshpassword}}是给Packer用来启动虚拟机安装Docker运行时环境，构建Docker镜像用的
+{{region}}是指Cube运行的region(建议写`hk`)
+{{az}}是指Cube运行的可用区(建议写`hk-02`)
+{{docker_repo}}是UHub仓库名
+{{docker_username}}是你的UCloud账户名(邮箱地址)
+{{docker_password}}是你的UCloud密码(登录网页控制台用的密码，UHub使用你的UCloud用户名密码验证身份)
+{{docker_image_name}}是要构建或使用的Docker镜像名(不知道怎么写的就写`sss`)
+{{sspassword}}是你的ssr password，这个得自己设置一个
 
-```hcl
-packer_vars = {
-  region            = "hk"
-  ssh_password      = "{{a temp ssh password for packer to use}}"
-  ucloud_project_id = "{{your ucloud project id}}"
-  region            = "hk"
-  az                = "hk-02"
-  docker_repo       = "{{your uhub repo name}}"
-  docker_username   = "{{your ucloud username}}"
-  docker_password   = "{{your ucloud password}}"
-  repo_url          = "uhub.service.ucloud.cn"
-  image     = "{{your image name}}"
-  image_tag = "latest"
-}
+```shell
+git clone -b cloudshell https://github.com/lonegunmanb/sss.git && SSH_PASSWORD={{sshpassword}} REGION={{region}} AZ={{az}} DOCKER_REPO={{docker_repo}} DOCKER_USERNAME={{docker_username}} DOCKER_PASSWORD={{docker_password}} DOCKER_IMAGE_NAME={{docker_image_name}} SSPASSWORD={{sspassword}} EIP_CHARGE_TYPE=month sh setup.sh
 ```
-
-If you have built a CentOS image with docker installed, add image id to tfvars:
-
-```hcl
-builder_image_id = "{{your image id}}"
-```
-
-4. build
-
-```shell script
-terraform init
-terraform apply
-```
-
-We execute packer in null_resource which has an uuid as trigger, so everytime you execute 'terraform apply' will trigger a build.

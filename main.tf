@@ -25,9 +25,7 @@ data "ucloud_images" "centos" {
 }
 
 resource "null_resource" "packer_exec" {
-  triggers = {
-    trigger = uuid()
-  }
+  count = var.skip_bake_docker ? 0 : 1
   provisioner "local-exec" {
     command = <<EOT
 packer build \
@@ -50,12 +48,12 @@ data "template_file" "pod_yaml" {
 }
 
 data "ucloud_vpcs" "default" {
-  name_regex = "DefaultVPC"
+  name_regex = "Default"
 }
 
 data "ucloud_subnets" "default" {
   vpc_id     = data.ucloud_vpcs.default.vpcs.0.id
-  name_regex = "DefaultNetwork"
+  name_regex = "Default"
 }
 
 resource "ucloud_cube_pod" "sss" {
