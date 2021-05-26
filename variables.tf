@@ -24,3 +24,7 @@ locals {
 variable "sspassword" {
   type = string
 }
+variable "eip_charge_type" {
+  type    = string
+  default = "month"
+}

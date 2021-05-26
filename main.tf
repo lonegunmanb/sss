@@ -60,17 +60,18 @@ data "ucloud_subnets" "default" {
 
 resource "ucloud_cube_pod" "sss" {
   depends_on        = [null_resource.packer_exec]
+  name              = "sss"
   availability_zone = var.packer_vars.az
   vpc_id            = data.ucloud_vpcs.default.vpcs.0.id
   subnet_id         = data.ucloud_subnets.default.subnets.0.id
   pod               = data.template_file.pod_yaml.rendered
-  charge_type       = "postpay"
-  name              = "sss"
 }
 
 resource "ucloud_eip" "sss_ip" {
+  depends_on    = [null_resource.packer_exec]
   bandwidth     = 200
   charge_mode   = "traffic"
+  charge_type   = var.eip_charge_type
   internet_type = "international"
   name          = "sss_eip"
 }
