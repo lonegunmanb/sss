@@ -6,6 +6,8 @@
 
 ![控制台右上角左起第二个图标，>_ 符号的图标，点击打开CloudShell](https://raw.githubusercontent.com/lonegunmanb/pic/master/2021-5-26/1622031510410-image.png)
 
+**控制台右上角左起第二个图标，>_ 符号的图标，点击打开CloudShell**
+
 在CloudShell中执行最下面的指令，但要先自行将变量值替换成自己需要的值，即可完成
 
 {{sshpassword}}是给Packer用来启动虚拟机安装Docker运行时环境，构建Docker镜像用的
